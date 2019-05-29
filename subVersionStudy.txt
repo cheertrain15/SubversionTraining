@@ -33,4 +33,13 @@ SV's Fundamental Concepts
    When 'locking' is needed : binary files like img,psd,or sound.
    Most important tip for avoiding 'conflict' : communicate with team.
 
+   Repository access URLs:
+      file:/// Direct repository access (on local disk)
+      http://  Access via WebDAV protocol to Subversion-aware Apache server
+      https:// Same as http://, but with SSL encapsulation (encryption and authentication)
+      svn://   Access via custom protocol to an svnserve server
+      svn+ssh://  Same as svn://, but through an SSH tunnel
+
+
+
 
