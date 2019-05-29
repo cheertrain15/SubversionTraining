@@ -1,0 +1,21 @@
+Subversion : free/open source version control system (VCS).
+
+Subversion's Components
+   svn : The command-line client program.
+   svnversion : A program for reporting the state (in terms of revisions of the items present) of a working copy.
+   svnlook : A tool for directly inspecting a Subversion repository.
+   svnadmin : A tool for creating, tweaking, or repairing a Subversion repository.
+   mod_dav_svn : A plug-in module for the Apache HTTP Server, used to make your repository available to others over a network.
+   svnserve : A custom standalone server program, runnable as a daemon process or invokable by SSH; another way to make your repository.
+   available to others over a network.
+   svndumpfilter  : A program for filtering Subversion repository dump streams.
+   svnsync : A program for incrementally mirroring one repository to another over a network.
+   svnrdump : A program for performing repository history dumps and loads over a network.
+
+Cautions for using Subversions:
+   Unix based cmd interface.
+   backward slashes ¥ instead of forward slashes / for path separators.
+
+Vocabulary:
+   top-down learner : gets a large overview first before getting into real work.
+   bottom-up learner : gets a large overview first before getting into real work.
