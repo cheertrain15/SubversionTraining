@@ -1,3 +1,5 @@
+Link : http://svnbook.red-bean.com/en/1.7/svn-book.pdf
+
 Subversion : free/open source version control system (VCS).
 
 Subversion's Components
@@ -18,4 +20,17 @@ Cautions for using Subversions:
 
 Vocabulary:
    top-down learner : gets a large overview first before getting into real work.
-   bottom-up learner : gets a large overview first before getting into real work.
+   bottom-up learner : learn by doing. Start the work first and get the big picture later.
+
+//SV = Subversion
+
+SV's Fundamental Concepts
+   Repository : a central store of the system's data( filesystem tree form).
+   copy-modify-merge solution instead of lock-modify-unlock solution.
+   out-of-date error : local file is older than the repository's file.
+      Other workers might have merged their files into repository.
+      In git language, we can put this as 'conflict'.
+   When 'locking' is needed : binary files like img,psd,or sound.
+   Most important tip for avoiding 'conflict' : communicate with team.
+
+
