@@ -341,7 +341,7 @@ Basic Usage
                +things about bloo.
 
    Fix your mistakes:
-      svn revert = undo
+      svn revert = undo(undoing scheduled operation is possible)
       ex)
          $ svn status README
          M     README
@@ -350,6 +350,144 @@ Basic Usage
          $ svn status README
          $
       
+   Resolve any conflicts: 
+      ex)
+         $ svn update
+         Updating '.':
+         U  INSTALL
+         G  README
+         Conflict discovered in 'bar.c'.
+         Select: (p) postpone, (df) diff-full, (e) edit,
+                  (mc) mine-conflict, (tc) theirs-conflict,
+                  (s) show all options: 
+
+      *U = Updated
+      *G = emerGed
+   
+      See all options
+         …
+         Select: (p) postpone, (df) diff-full, (e) edit,
+                  (mc) mine-conflict, (tc) theirs-conflict,
+                  (s) show all options: s
+
+            (e) edit - change merged file in an editor
+            (df) diff-full - show all changes made to merged file
+            (r) resolved - accept merged version of file
+
+            (dc) display-conflict - show all conflicts (ignoring merged version)
+            (mc) mine-conflict - accept my version for all conflicts (same)
+            (tc) theirs-conflict - accept their version for all conflicts (same)
+            
+            (mf) mine-full - accept my version of entire file (even non-conflicts)
+            (tf) theirs-full - accept their version of entire file (same)
+
+            (p) postpone - mark the conflict to be resolved later
+            (l) launch - launch external tool to resolve conflict
+            (s) show all - show this list
+
+      Viewing conflict differences interactively:
+         df
+         ex)
+            …
+            Select: (p) postpone, (df) diff-full, (e) edit,
+            (mc) mine-conflict, (tc) theirs-conflict,
+            (s) show all options: df
+            --- .svn/text-base/sandwich.txt.svn-base Tue Dec 11 21:33:57 2007
+            +++ .svn/tmp/tempfile.32.tmp Tue Dec 11 21:34:33 2007
+            @@ -1 +1,5 @@
+            -Just buy a sandwich.
+            +<<<<<<< .mine
+            +Go pick up a cheesesteak.
+            +=======
+            +Bring me a taco!
+            +>>>>>>> .r32
+            …
+      
+      Postponing conflict resolution:
+         For every conflicted file, Subversion places three extra unversioned files in your working copy.
+            filename.mine : It contains any local modifications you had made.
+            filename.rOLDREV : The unmodified revision of the file in your working copy before you began the update process.
+            filename.rNEWREV : The file that your Subversion client just received from the server via the update of your working copy.
+
+         ex)
+            $ svn update
+            Updating '.':
+            Conflict discovered in 'sandwich.txt'.
+            Select: (p) postpone, (df) diff-full, (e) edit,
+                     (mc) mine-conflict, (tc) theirs-conflict,
+                     (s) show all options: p
+            C     sandwich.txt
+            Updated to revision 2.
+            Summary of conflicts:
+               Text conflicts: 1
+            $ ls -1
+            sandwich.txt
+            sandwich.txt.mine
+            sandwich.txt.r1
+            sandwich.txt.r2
+
+            $ svn commit -m "Add a few more things"
+            svn: E155015: Commit failed (details follow):
+            svn: E155015: Aborting commit: '/home/sally/svn-work/sandwich.txt' remains in conflict
+
+         *If you've postponed a conflict, you need to resolve the conflict before Subversion will allow you to commit your changes. 
+            svn resolve : removes the three temporary files and accepts the version of the file that you specified with the '--accept' option
+               ex)
+                  $ svn resolve --accept working sandwich.txt
+                  Resolved conflicted state of 'sandwich.txt'
+      
+      Discarding your changes in favor of a newly fetched revision:
+         svn resolve --accept theirs-full CONFLICTED-PATH = discard your edits and remove the temp files.
+         ex)
+            $ svn update
+            Updating '.':
+            Conflict discovered in 'sandwich.txt'.
+            Select: (p) postpone, (df) diff-full, (e) edit,
+                     (mc) mine-conflict, (tc) theirs-conflict,
+                     (s) show all options: p
+            C     sandwich.txt
+            Updated to revision 2.
+            Summary of conflicts:
+               Text conflicts: 1
+            $ ls sandwich.*
+            sandwich.txt sandwich.txt.mine sandwich.txt.r2 sandwich.txt.r1
+            $ svn resolve --accept theirs-full sandwich.txt
+            Resolved conflicted state of 'sandwich.txt'
+            $
+      
+         *if svn revert is used, you don't need to use svn resolve.
+
+      Commit your changes:
+         svn commit -m "Some Message"
+         ex)
+            $ svn commit -m "Corrected number of cheese slices."
+            Sending     sandwich.txt
+            Transmitting file data .
+            Committed revision 3.
+
+         svn commit -F logmsg : sends log message using txt file.
+         ex)
+            $ svn commit -F logmsg
+            Sending     sandwich.txt
+            Transmitting file data .
+            Committed revision 4.
+
+         *if no logs are written, SV writes the log automatically.
+
+         cancel the commit
+         ex)
+            $ svn commit
+            Waiting for Emacs...Done
+            Log message unchanged or not specified
+            (a)bort, (c)ontinue, (e)dit
+            a
+            $
+
+      Examining History:
+               
+
+
+
 
 
 
