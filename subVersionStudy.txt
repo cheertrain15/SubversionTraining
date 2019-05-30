@@ -97,7 +97,14 @@ SV's Fundamental Concepts
                U    button.c
                Updated to revision 57.
                $
-               
+      
+      *updates and commits are separate.
+
+
+Basic Usage
+   $ svn help : built-in documentation
+   $ svn help [SUBCOMMAND] : show full usage message for the command.
+   
 
          
 
