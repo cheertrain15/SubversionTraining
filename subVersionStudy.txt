@@ -39,7 +39,66 @@ SV's Fundamental Concepts
       https:// Same as http://, but with SSL encapsulation (encryption and authentication)
       svn://   Access via custom protocol to an svnserve server
       svn+ssh://  Same as svn://, but through an SSH tunnel
+      ^/ : directory of root of the repository
 
+   Working copy:
+      SV records 1.working revision & 2.timestamp recording
+      Unchanged, and current : 
+         Local - no changes
+         Repository - no changes
 
+      Locally changed, and current : 
+         Local - changes exist (svn commit)
+         Repository - no changes
+
+      Unchanged, and out of date :
+         Local - no changes
+         Repository - changes exist (svn update)
+
+      Locally changed, and out of date :
+         Local - changes exist (svn commit)
+         Repository - changes exist (svn update)
+         *update -> commit
+         *if fails to merge, fix conflict manually
+      
+      To get the working copy: 
+         1. check out some subtree of the repository 
+            *check out = create a working copy of the project.
+            ex) 
+               $ svn checkout http://svn.example.com/repos/calc
+               A  calc/Makefile
+               A  calc/integer.c
+               A  calc/button.c
+               Checked out revision 56.
+               $ ls -A calc
+               Makefile button.c integer.c .svn/
+               $
+
+            A's means SV is adding some items to the working copy.
+            .svn./ holds extra information needed by SV.
+
+      To publish your change to others:
+         svn commit
+            ex)
+               $ svn commit button.c -m "Fixed a typo in button.c."
+               Sending     button.c
+               Transmitting file data .
+               Committed revision 57.
+               $
+
+      To update working copy
+         svn update
+            ex)
+               $ pwd
+               /home/sally/calc
+               $ ls -A
+               $ svn update
+               Updating '.':
+               U    button.c
+               Updated to revision 57.
+               $
+               
+
+         
 
 
