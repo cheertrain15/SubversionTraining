@@ -168,7 +168,188 @@ Basic Usage
          tags/
          $
 
+      *SV uses UTF-8 encode.
    
+   Creating Working copy:
+      'checkout' a directory = create a working copy of that directory on local machine.
+      ex)
+         $ svn checkout http://svn.example.com/svn/repo/trunk
+         A trunk/README
+         A trunk/INSTALL
+         A trunk/src/main.c
+         A trunk/src/header.h
+         …
+         Checked out revision 8810.
+         $
+
+      checkout a deppter subdirectory of a repository.
+      ex)
+         $ svn checkout http://svn.example.com/svn/repo/trunk/src
+         A src/main.c
+         A src/header.h
+         A src/lib/helpers.c
+         …
+         Checked out revision 8810.
+         $
+      
+      To copy or move an item in a working copy
+         1. svn copy
+         2. svn move
+         !! not to use OS's copy&paste or move command.
+
+         Optionally specify the local directory name.
+            $ svn checkout http://svn.example.com/svn/repo/trunk my-working-copy
+            A my-working-copy/README
+            A my-working-copy/INSTALL
+            A my-working-copy/src/main.c
+            A my-working-copy/src/header.h
+            …
+            Checked out revision 8810.
+            $
+         *if no names are specified, svn checkout will create it for you.
+
+   Basic Work Cycle:
+      1. Update your working copy.(svn update)
+      2. Make your changes.(svn add, svn delete, svn copy, svn move)
+      3. Review your changes.(svn status, svn diff)
+      4. Fix your mistakes.(svn revert: restores a file/directory)
+      5. Resolve any conflicts (merge others' changes).(svn update, svn resolve)
+      6. Publish (commit) your changes.(svn commit)
+
+   Update Your Working Copy:
+      svn update : sync local working copy with latest version.
+      ex)
+         $ svn update
+         Updating '.':
+         U foo.c
+         U bar.c
+         Updated to revision 2.
+         $   
+   
+   Make Your Changes:
+      file changes : common file code, context change
+      tree changes : directory's structure change. (eg: add/remove/rename files or directories)
+         svn commands
+            1. svn add FOO 
+                  To schedule the file, directory, or symbolic link FOO to be added to the repository. 
+                  If you want only to add FOO itself, pass the --depth=empty option.
+                  commit required.
+
+            2. svn delete FOO 
+                  To schedule the file, directory, or symbolic link FOO to be deleted from the repository. 
+                  commit required.
+
+            3. svn copy FOO BAR 
+                  Create a new item BAR as a duplicate of FOO and automatically schedule BAR for addition. 
+                  To create intermediate directories, pass the '--parents' option.
+
+            4. svn move FOO BAR  
+                  svn copy FOO BAR; : BAR is scheduled for addition as a copy of FOO.
+                  svn delete FOO :  FOO is scheduled for removal.
+                  To create intermediate directories, pass the '--parents' option.
+
+            5. svn mkdir FOO 
+                  mkdir FOO; :  a new directory named FOO is created.
+                  svn add FOO :  FOO is scheduled for addition.
+      *Repository can be changed w/o the working copy.
+   
+   Review your changes: 
+      svn status : see the overview of the changes you've made.
+      svn diff : get more detail of those changes.
+
+         ex)
+            $ svn status
+            ? scratch.c
+            A stuff/loot
+            A stuff/loot/new.c
+            D stuff/old.c
+            M bar.c
+            $
+
+         ? : is not under version control.
+         A : has been scheduled for addition into the repository.
+         C : is in a state of conflict.
+         D : has been scheduled for deletion from the repository.
+         M : the content has been modified.
+
+      Able to get information about the item itself by passing path to svn status.
+         ex)
+            $ svn status stuff/fish.c
+            D stuff/fish.c
+         
+      svn status --verbose (-v) : show status of every item in working copy, eventhough it has not been modified.
+         ex)
+            $ svn status -v
+            M     44 23 sally README
+                  44 30 sally INSTALL
+            M     44 20 harry bar.c
+                  44 18 ira stuff
+                  44 35 harry stuff/trout.c
+            D     44 19 ira stuff/fish.c
+                  44 21 sally stuff/things
+            A     0 ? ? stuff/things/bloo.h
+                  44 36 harry stuff/things/gloo.c
+
+      To see items which have been modified in repository.
+         svn status --show-updates
+         ex)
+            $ svn status -u -v
+            M     *     44    23    sally    README
+            M           44    20    harry    bar.c
+                  *     44    35    harry    stuff/trout.c
+            D           44    19    ira      stuff/fish.c
+            A           0     ?     ?        stuff/things/bloo.h
+            Status against revision: 46
+
+         svn diff : displays differences in file content.
+            - : lines removed from the file.
+            + : lines added to the file.
+            ex)
+               $ svn diff
+               Index: bar.c
+               ===================================================================
+               --- bar.c (revision 3)
+               +++ bar.c (working copy)
+               @@ -1,7 +1,12 @@
+               +#include <sys/types.h>
+               +#include <sys/stat.h>
+               +#include <unistd.h>
+               +
+               +#include <stdio.h>
+               int main(void) {
+               - printf("Sixty-four slices of American Cheese...\n");
+               + printf("Sixty-five slices of American Cheese...\n");
+               return 0;
+               }
+               Index: README
+               ===================================================================
+               --- README (revision 3)
+               +++ README (working copy)
+               @@ -193,3 +193,4 @@
+               +Note to self: pick up laundry.
+               Index: stuff/fish.c
+               ===================================================================
+               --- stuff/fish.c (revision 1)
+               +++ stuff/fish.c (working copy)
+               -Welcome to the file known as 'fish'.
+               -Information on fish will be here soon.
+               Index: stuff/things/bloo.h
+               ===================================================================
+               --- stuff/things/bloo.h (revision 8)
+               +++ stuff/things/bloo.h (working copy)
+               +Here is a new file to describe
+               +things about bloo.
+
+   Fix your mistakes:
+      svn revert = undo
+      ex)
+         $ svn status README
+         M     README
+         $ svn revert README
+         Reverted 'README'
+         $ svn status README
+         $
+      
 
 
 
