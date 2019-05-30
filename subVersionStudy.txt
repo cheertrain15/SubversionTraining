@@ -99,13 +99,76 @@ SV's Fundamental Concepts
                $
       
       *updates and commits are separate.
-
+//
 
 Basic Usage
    $ svn help : built-in documentation
    $ svn help [SUBCOMMAND] : show full usage message for the command.
+
+   command modifiers:
+      Referred as 'switches' or 'flag' or 'options'.
+      Every option has at least one long format.
+         ex)
+            --changelist : --cl
+            -- : most used options
+
+   Getting Data into Your Repository
+      Get new files into your Subversion repository.
+         1. svn import
+         2. svn add
+      
+      svn import
+         +doesn't require a working copy.
+         +files are immediately commited to the repository.
+         Often used when tree of files(project) exist.
+         ex)
+            $ svn import /path/to/mytree ¥
+                           http://svn.example.com/svn/repo/some/project ¥
+                           -m "Initial import"
+            Adding      mytree/foo.c
+            Adding      mytree/bar.c
+            Adding      mytree/subdir
+            Adding      mytree/subdir/quux.h
+
+            Committed revision 1.
+            $
+
+         +svn import creates new directory for you.
+
+            $ svn list http://svn.exmaple.com/svn/repo/some/project
+            bar.c
+            foo.c
+            subdir/
+            $
+
+         !! After the import is finished, the original local directory is not converted into a working copy.
+         !! To begin working on that data, need to create a fresh working copy of that tree.
+   
+   Recommended Repository Layout:
+      trunk : main line(master?) 
+      branches : divergent copies of development lines
+      tags : named snapshots of a particular line of development line.
+
+      1. Each project should have a recognizable project root in the repository.
+      2. Each project root should contain a trunk subdirectory for the main development line.
+         A 'branches' subdirectory in which specific branches (or collections of branches) will be created,
+         and a 'tags' subdirectory in which specific tags (or collections of tags) will be created. 
+
+      ex)  
+         $ svn list file:///var/svn/single-project-repo
+         trunk/
+         branches/
+         tags/
+         $ svn list file:///var/svn/multi-project-repo
+         project-A/
+         project-B/
+         $ svn list file:///var/svn/multi-project-repo/project-A
+         trunk/
+         branches/
+         tags/
+         $
+
    
 
-         
 
 
