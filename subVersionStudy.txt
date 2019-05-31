@@ -484,10 +484,349 @@ Basic Usage
             $
 
       Examining History:
+         svn diff : Shows line-level details of a particular change.
+         svn log : Shows you broad information: log messages with date and author information 
+                     attached to revisions and which paths changed in each revision.
+         svn cat : Retrieves a file as it existed in a particular revision number 
+                     and displays it on your screen.
+         svn annotate : Retrieves a human-readable file as it existed in a particular revision number, 
+                        displaying its contents in a tabular form with lastchanged information 
+                        attributed to each line of the file.
+         svn list : Displays the files in a directory for any given revision.
+
+         *svn diff common usage
+            1. Examining local changes.
+            2. Comparing your working copy to the repository.
+            3. Comparing repository revisions.
+
+            1. Examining local changes:
+               svn diff with no options -  compare your working files to the cached “pristine” copies in the .svn area.
+               ex)
+                  $ svn diff
+                  Index: rules.txt
+                  ===================================================================
+                  --- rules.txt (revision 3)
+                  +++ rules.txt (working copy)
+                  @@ -1,4 +1,5 @@
+                  Be kind to others
+                  Freedom = Responsibility
+                  Everything in moderation
+                  -Chew with your mouth open
+                  +Chew with your mouth closed
+                  +Listen when others are speaking
+                  $
+            
+            2. Comparing working copy to repository
+               --revision (-r) number is passed - your working copy is compared to the specified revision in the repository.
+               ex)
+                  $ svn diff -r 3 rules.txt
+                  Index: rules.txt
+                  ===================================================================
+                  --- rules.txt (revision 3)
+                  +++ rules.txt (working copy)
+                  @@ -1,4 +1,5 @@
+                  Be kind to others
+                  Freedom = Responsibility
+                  Everything in moderation
+                  -Chew with your mouth open
+                  +Chew with your mouth closed
+                  +Listen when others are speaking
+                  $
+
+            3. Comparing repository revisions
+               ex)
+                  $ svn diff -r 2:3 rules.txt
+                  Index: rules.txt
+                  ===================================================================
+                  --- rules.txt (revision 2)
+                  +++ rules.txt (revision 3)
+                  @@ -1,4 +1,4 @@
+                  Be kind to others
+                  -Freedom = Chocolate Ice Cream
+                  +Freedom = Responsibility
+                  Everything in moderation
+                  Chew with your mouth open
+                  $
                
+               *--change (-c) option
+               ex)
+                  $ svn diff -c 3 rules.txt
+                  Index: rules.txt
+                  ===================================================================
+                  --- rules.txt (revision 2)
+                  +++ rules.txt (revision 3)
+                  @@ -1,4 +1,4 @@
+                   Be kind to others
+                  -Freedom = Chocolate Ice Cream
+                  +Freedom = Responsibility
+                   Everything in moderation
+                   Chew with your mouth open
+                  $
+            
+               *compare repository revisions by adding URL
+                  ex)
+                     $ svn diff -c 5 http://svn.example.com/repos/example/trunk/text/rules.txt
+                     …
+                     $
+            
+            4. Generating a List of Historical Changes
+               ex) 
+                  $ svn log
+                  ------------------------------------------------------------------------
+                  r3 | sally | 2008-05-15 23:09:28 -0500 (Thu, 15 May 2008) | 1 line
+                  Added include lines and corrected # of cheese slices.
+                  ------------------------------------------------------------------------
+                  r2 | harry | 2008-05-14 18:43:15 -0500 (Wed, 14 May 2008) | 1 line
+                  Added main() methods.
+                  ------------------------------------------------------------------------
+                  r1 | sally | 2008-05-10 19:50:31 -0500 (Sat, 10 May 2008) | 1 line
+                  Initial import
+                  ------------------------------------------------------------------------
+
+               *--revision (-r) : to see a different range of revisions in
+                                   a particular order or just a single revision.
+                  ex) 
+                     svn log -r 5:19 - Display logs for revisions 5 through 19 in chronological order.
+                     svn log -r 19:5 - Display logs for revisions 5 through 19 in reverse chronological order.
+                     svn log -r 8 - Display logs for revision 8 only.
+
+               *examine the log history of a single file or directory
+               *display log messages only for those revisions in which the working file (or URL) changed.
+                  ex)
+                     $ svn log foo.c
+                     …
+                     $ svn log http://foo.com/svn/trunk/code/foo.c
+                     …
+               
+               *even more information about a file or directory
+               ex)
+                  $ svn log -r 8 -v
+                  ------------------------------------------------------------------------
+                  r8 | sally | 2008-05-21 13:19:25 -0500 (Wed, 21 May 2008) | 1 line
+                  Changed paths:
+                  M /trunk/code/foo.c
+                  M /trunk/code/bar.h
+                  A /trunk/code/doc/README
+                  Frozzled the sub-space winch.
+                  ------------------------------------------------------------------------
+               *svn log also takes a --quiet (-q)
+               * svn log -r 2 ^/. = to see what changed in specific revision.
+               * svn log -diff = to see both the high-level, semantic changes and the line-based modifications 
+                                 of a revision all at the same time.
+            
+      Browsing the Repository 
+         svn cat =  examine an earlier version of a file and not necessarily the differences between two files.
+         svn list
+
+         Displaying File contents
+            ex)
+               $ svn cat -r 2 rules.txt
+               Be kind to others
+               Freedom = Chocolate Ice Cream
+               Everything in moderation
+               Chew with your mouth open
+               $
+
+            *Redirect the output directly into a file
+               $ svn cat -r 2 rules.txt > rules.txt.v2
+               $
+            
+         Displaying line-by-line change attribution
+            ex)
+               $ svn annotate rules.txt
+               1 harry Be kind to others
+               3 sally Freedom = Responsibility
+               1 harry Everything in moderation
+               -      - Chew with your mouth closed
+               -      - Listen when others are speaking
+            
+            *see the unmodified form of the file.
+            ex)
+               $ svn annotate rules.txt@BASE
+               1     harry Be kind to others
+               3     sally Freedom = Responsibility
+               1     harry Everything in moderation
+               1     harry Chew with your mouth open
+
+            ex)
+               $ svn blame rules.txt -r 2
+               1 harry Be kind to others
+               1 harry Freedom = Chocolate Ice Cream
+               1 harry Everything in moderation
+               1 harry Chew with your mouth open
+            
+            * not human-readable
+            ex)
+               $ svn annotate images/logo.png
+               Skipping binary file: 'images/logo.png'
+               $
+               *error
+
+            ex)
+               $ svn annotate images/logo.png --force
+                  6     harry \211PNG
+                  6     harry ^Z
+                  6     harry
+                  7     harry \274\361\MI\300\365\353^X\300…
+            *svn blame
+            *svn praise
+
+         Listing versione directories
+            svn list = shows you what files are in a repository directory
+            ex)
+               $ svn list http://svn.example.com/repo/project
+               README
+               branches/
+               tags/
+               trunk/
+
+               $ svn list -v http://svn.example.com/repo/project
+                  23351 sally                Feb 05 13:26 ./
+                  20620 harry          1084  Jul 13 2006 README
+                  23339 harry                Feb 04 01:40 branches/
+                  23198 harry                Jan 23 17:17 tags/
+                  23351 sally                Feb 05 13:26 trunk/
+
+   Fetching Older Repository Snapshots
+      --revision (-r) option with svn update = to take an entire working copy “back in time”.
+      ex)
+         # Make the current directory look like it did in r1729.
+         $ svn update -r 1729
+         Updating '.':
+         …
+         $
+
+      *To create a whole new working copy from an older snapshot.
+      ex)
+         # Checkout the trunk from r1729.
+         $ svn checkout http://svn.example.com/svn/repo/trunk@1729 trunk-1729
+         …
+         # Checkout the current trunk as it looked in r1729.
+         $ svn checkout http://svn.example.com/svn/repo/trunk -r 1729 trunk-1729
+         …
+         $
+
+      *To create a local copy of all or part of your repository 
+      without any .svn administrative directories included. 
+      ex)
+         # Export the trunk from the latest revision.
+         $ svn export http://svn.example.com/svn/repo/trunk trunk-export
+         …
+         # Export the trunk from r1729.
+         $ svn export http://svn.example.com/svn/repo/trunk@1729 trunk-1729
+         …
+         # Export the current trunk as it looked in r1729.
+         $ svn export http://svn.example.com/svn/repo/trunk -r 1729 trunk-1729
+         …
+         $
+
+   Recovering from an Interruption
+      svn cleanup : searches your working copy and runs any leftover to-do items, 
+                  removing working copy locks as it completes those operations.
+                  *use it when 'locked' problem occurs.
+      ex)
+         $ svn status
+            L  somedir
+         M     somedir/foo.c
+         $ svn cleanup
+         $ svn status
+         M     somedir/foo.c
+         
+   Dealing with Structural Conflicts
+      svn info = shows the URLs of the items involved in the conflict.
+         The left URL shows the source of the local side of the conflict.
+         The right URL shows the source of the incoming side of the conflict.
+
+      ex)
+         $ svn info code/bar.c
+         Path: code/bar.c 
+         Name: bar.c
+         URL: http://svn.example.com/svn/repo/trunk/code/bar.c
+         …
+         Tree conflict: local edit, incoming delete upon update
+         Source left: (file) ^/trunk/code/bar.c@4
+         Source right: (none) ^/trunk/code/bar.c@5
+         $
+
+//
+
+Advanced Topics
+
+   Revision Specifiers
+      HEAD - The latest (or “youngest”) revision in the repository.
+      BASE - The revision number of an item in a working copy. 
+      COMMITTED - The most recent revision prior to, or equal to, BASE, in which an item changed.
+      PREV - The revision immediately before the last revision in which an item changed. (Same as COMMITTED-1)
+
+   $ svn diff -r PREV:COMMITTED foo.c
+   # shows the last change committed to foo.c
+
+   $ svn log -r HEAD
+   # shows log message for the latest repository commit
+   
+   $ svn diff -r HEAD
+   # compares your working copy (with all of its local changes) to the
+   # latest version of that tree in the repository
+   
+   $ svn diff -r BASE:HEAD foo.c
+   # compares the unmodified version of foo.c with the latest version of
+   # foo.c in the repository
+   
+   $ svn log -r BASE:HEAD
+   # shows all commit logs for the current versioned directory since you
+   # last updated
+
+   $ svn update -r PREV foo.c
+   # rewinds the last change on foo.c, decreasing foo.c's working revision
+
+   $ svn diff -r BASE:14 foo.c
+   # compares the unmodified version of foo.c with the way foo.c looked
+   # in revision 14   
+
+
+   Revision Dates
+   $ svn update -r {2006-02-17}
+   $ svn update -r {15:30}
+   $ svn update -r {15:30:00.200000}
+   $ svn update -r {"2006-02-17 15:30"}
+   $ svn update -r {"2006-02-17 15:30 +0230"}
+   $ svn update -r {2006-02-17T15:30}
+   $ svn update -r {2006-02-17T15:30Z}
+   $ svn update -r {2006-02-17T15:30-04:00}
+   $ svn update -r {20060217T1530}
+   $ svn update -r {20060217T1530Z}
+   $ svn update -r {20060217T1530-0500}
+   …
+
+   $ svn log -r {2006-11-28}
+   ------------------------------------------------------------------------
+   r12 | ira | 2006-11-27 12:31:51 -0600 (Mon, 27 Nov 2006) | 6 lines
+   …
+
+   *Find all revisions between both dates
+   $ svn log -r {2006-11-20}:{2006-11-29}
+   …
+
+   Peg and Operative Revisions
+      rename directory = rename Concepts
+      peg revision = sole purpose of identifying unique lines of history
+      *--revision (-r) = operative revision range.
+      
+      The Peg Revision Algorithm
+         $ svn command -r OPERATIVE-REV item@PEG-REV
+
+         If OPERATIVE-REV is older than PEG-REV, the algorithm is as follows:
+
+         1. Locate item in the revision identified by PEG-REV. There can be only one such object.
+         2. Trace the object's history backwards (through any possible renames) to its ancestor in the revision OPERATIVE-REV.
+         3. Perform the requested action on that ancestor, wherever it is located, or whatever its name might be or might have been
+            at that time.
+            
+      
 
 
 
 
 
+                  
 
